@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 #define FIRST 8
 #define LAST 13
 
