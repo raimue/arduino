@@ -4,7 +4,7 @@
 #define LED 13
 
 // Initialize the library with the numbers of the interface pins
-LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+LiquidCrystal lcd(7, 6, 5, 4, 12, 11);
 
 void setup() {
     Serial.begin(115200);
