@@ -9,3 +9,9 @@ endif
 MONITOR_CMD = screen -c /dev/null
 
 ARDMK_DIR = $(realpath ../../tools/arduino-mk)
+
+# Helpful aliases
+.PHONY: default serial flash
+default: all
+serial: monitor
+flash: upload
