@@ -1,0 +1,17 @@
+uview.upload.tool=avrdude
+uview.bootloader.tool=avrdude
+uview.name=MicroView
+uview.upload.protocol=arduino
+uview.upload.maximum_size=32256
+uview.upload.speed=115200
+uview.bootloader.low_fuses=0xff
+uview.bootloader.high_fuses=0xde
+uview.bootloader.extended_fuses=0x05
+uview.bootloader.path=optiboot
+uview.bootloader.file=optiboot_atmega328.hex
+uview.bootloader.unlock_bits=0x3F
+uview.bootloader.lock_bits=0x0F
+uview.build.mcu=atmega328p
+uview.build.f_cpu=16000000L
+uview.build.core=arduino
+uview.build.variant=standard
