@@ -1,3 +1,6 @@
 [submodule "tools/arduino-mk"]
 	path = tools/arduino-mk
 	url = https://github.com/sudar/Arduino-Makefile.git
+[submodule "libraries/MicroView"]
+	path = libraries/MicroView
+	url = git@github.com:geekammo/MicroView-Arduino-Library.git
