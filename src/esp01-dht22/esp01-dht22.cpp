@@ -7,17 +7,15 @@
 // Replace with your network details
 //#define WIFI_SSID    ""
 //#define WIFI_PASS    ""
+//#define SERVER_IP    "192.168.0.1"
+//#define SERVER_PORT  1234
 #include "wifi-auth.h"
 
 #define STRINGIFY(s) XSTRINGIFY(s)
 #define XSTRINGIFY(s) #s
 
-#define SERVER_PORT 1337
-
 // Enable debugging over serial
 //#define DEBUG
-
-WiFiServer server(SERVER_PORT);
 
 // DHT22 Sensor
 const int DHT_DATA = 2;
@@ -44,9 +42,9 @@ void setup() {
     pinMode(LED_STATUS, OUTPUT);
     for (int i = 0; i < 3; i++) {
         digitalWrite(LED_STATUS, LOW);
-        delay(100);
+        delay(50);
         digitalWrite(LED_STATUS, HIGH);
-        delay(100);
+        delay(50);
     }
 #endif
 
@@ -67,10 +65,13 @@ void setup() {
 
     // TODO: go to sleep if no connection
     while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
 #ifdef DEBUG
         Serial.print(".");
 #endif
+        digitalWrite(LED_STATUS, LOW);
+        delay(250);
+        digitalWrite(LED_STATUS, HIGH);
+        delay(250);
     }
 #ifdef DEBUG
     Serial.println("");
@@ -81,62 +82,113 @@ void setup() {
     // Enable DHT sensor
     dht.begin();
 
-    // Starting the web server
-    server.begin();
-
     // Update status LED for connection
 #ifndef DEBUG
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 2; i++) {
         digitalWrite(LED_STATUS, LOW);
-        delay(500);
+        delay(100);
         digitalWrite(LED_STATUS, HIGH);
-        delay(500);
+        delay(100);
     }
-#endif
-
-#ifdef DEBUG
-    Serial.println("Server running on port " STRINGIFY(SERVER_PORT));
 #endif
 }
 
 // runs over and over again
 void loop() {
-    // Listenning for new clients
-    WiFiClient client = server.available();
+    // Temporary variables
+    char celsiusTemp[7];
+    char humidityTemp[7];
+    float t;
+    float h;
+    int sleeptime = 30000;
+    unsigned long timeout;
 
-    if (client) {
-        if (client.connected()) {
-            // Temporary variables
-            char celsiusTemp[7];
-            char humidityTemp[7];
-
-            // Print MAC
-            client.print(WiFi.macAddress());
-            client.print("  ");
-
-            // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-            float h = dht.readHumidity();
-            // Read temperature as Celsius (the default)
-            float t = dht.readTemperature();
-            // Check if any reads failed and exit
-            if (isnan(h) || isnan(t)) {
-                client.println("FAILED");
-            } else {
-                // Convert float to string
-                dtostrf(t, 6, 2, celsiusTemp);
-                dtostrf(h, 6, 2, humidityTemp);
-
-                // Print values
-                client.print(celsiusTemp);
-                client.print(" C  ");
-                client.print(humidityTemp);
-                client.println(" %");
-            }
-            // yield CPU to schedule socket communication
-            delay(1);
+    // Connect to server to submit measurement
+    WiFiClient client;
+    if (!client.connect(SERVER_IP, SERVER_PORT)) {
+#ifdef DEBUG
+        Serial.println("Client connection failed!");
+#endif
+        // Update status LED for failure
+        for (int i = 0; i < 2; i++) {
+            digitalWrite(LED_STATUS, LOW);
+            delay(100);
+            digitalWrite(LED_STATUS, HIGH);
+            delay(100);
         }
-        // closing the client connection
-        delay(1);
-        client.stop();
+        goto error;
     }
+
+    // Update status LED for activity
+#ifndef DEBUG
+    digitalWrite(LED_STATUS, LOW);
+    delay(1000);
+    digitalWrite(LED_STATUS, HIGH);
+#endif
+
+    // Print MAC
+    client.print(WiFi.macAddress());
+    client.print("  ");
+
+    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+    t = dht.readTemperature();
+    h = dht.readHumidity();
+
+    // Check if any reads failed and exit
+    if (isnan(h) || isnan(t)) {
+        client.println("FAILED");
+    } else {
+        // Convert float to string
+        dtostrf(t, 6, 2, celsiusTemp);
+        dtostrf(h, 6, 2, humidityTemp);
+
+        // Print values
+        client.print(celsiusTemp);
+        client.print(" C  ");
+        client.print(humidityTemp);
+        client.println(" %");
+    }
+    // yield CPU to schedule socket communication
+    delay(1);
+
+    // Wait for answer from server
+    timeout = millis();
+    while (!client.available()) {
+        if (millis() - timeout > 5000) {
+#ifdef DEBUG
+            Serial.println("Server reply timeout");
+#endif
+            goto error;
+        }
+    }
+
+    // Read answer from server
+    while (client.available()) {
+        int tmp = client.parseInt();
+#ifdef DEBUG
+        Serial.print("Server reply: ");
+        Serial.println(tmp);
+#endif
+        if (tmp > 0) {
+            sleeptime = tmp;
+        }
+    }
+
+    // success
+    goto out;
+
+error:
+    // Update status LED for failure
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(LED_STATUS, LOW);
+        delay(100);
+        digitalWrite(LED_STATUS, HIGH);
+        delay(100);
+    }
+
+out:
+    // disconnect
+    client.stop();
+    // go to sleep
+    delay(sleeptime);
 }
