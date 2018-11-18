@@ -23,9 +23,8 @@ WiFiServer server(SERVER_PORT);
 const int DHT_DATA = 2;
 DHT dht(DHT_DATA, DHT22);
 
-// Temporary variables
-static char celsiusTemp[7];
-static char humidityTemp[7];
+// Status LED
+const int LED_STATUS = 1;
 
 // only runs once on boot
 void setup() {
@@ -35,8 +34,21 @@ void setup() {
     delay(10);
 #endif
 
-    // Enable DHT sensor
-    dht.begin();
+    // Use TX pin for status LED only
+#ifndef DEBUG
+    pinMode(LED_STATUS, OUTPUT);
+#endif
+
+    // Blink status LED
+#ifndef DEBUG
+    pinMode(LED_STATUS, OUTPUT);
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(LED_STATUS, LOW);
+        delay(100);
+        digitalWrite(LED_STATUS, HIGH);
+        delay(100);
+    }
+#endif
 
     // Connecting to WiFi network
 #ifdef DEBUG
@@ -63,8 +75,21 @@ void setup() {
     Serial.println(WiFi.localIP());
 #endif
 
+    // Enable DHT sensor
+    dht.begin();
+
     // Starting the web server
     server.begin();
+
+    // Update status LED for connection
+#ifndef DEBUG
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(LED_STATUS, LOW);
+        delay(500);
+        digitalWrite(LED_STATUS, HIGH);
+        delay(500);
+    }
+#endif
 
 #ifdef DEBUG
     Serial.println("Server running on port " STRINGIFY(SERVER_PORT));
@@ -77,53 +102,38 @@ void loop() {
     WiFiClient client = server.available();
 
     if (client) {
-#ifdef DEBUG
-        Serial.println("New client");
-#endif
         if (client.connected()) {
+            // Temporary variables
+            char celsiusTemp[7];
+            char humidityTemp[7];
+
+            // Print MAC
+            client.print(WiFi.macAddress());
+            client.print("  ");
+
             // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
             float h = dht.readHumidity();
             // Read temperature as Celsius (the default)
             float t = dht.readTemperature();
-            // Check if any reads failed and exit early (to try again).
+            // Check if any reads failed and exit
             if (isnan(h) || isnan(t)) {
-#ifdef DEBUG
-                Serial.println("Failed to read from DHT sensor!");
-#endif
-                strcpy(celsiusTemp,"Failed");
-                strcpy(humidityTemp, "Failed");
-            }
-            else{
-                // Computes temperature values in Celsius and Humidity
-                float hic = dht.computeHeatIndex(t, h, false);
-                dtostrf(hic, 6, 2, celsiusTemp);
+                client.println("FAILED");
+            } else {
+                // Convert float to string
+                dtostrf(t, 6, 2, celsiusTemp);
                 dtostrf(h, 6, 2, humidityTemp);
 
-#ifdef DEBUG
-                // You can delete the following Serial.print's, it's just for debugging purposes
-                Serial.print("Humidity: ");
-                Serial.print(humidityTemp);
-                Serial.print(" %\t Temperature: ");
-                Serial.print(celsiusTemp);
-                Serial.print(" *C\t Heat index: ");
-                Serial.print(hic);
-                Serial.println(" *C");
-#endif
+                // Print values
+                client.print(celsiusTemp);
+                client.print(" C  ");
+                client.print(humidityTemp);
+                client.println(" %");
             }
-            client.print(WiFi.macAddress());
-            client.print("  ");
-            client.print(celsiusTemp);
-            client.print(" C  ");
-            client.print(humidityTemp);
-            client.println(" %");
+            // yield CPU to schedule socket communication
             delay(1);
         }
         // closing the client connection
         delay(1);
         client.stop();
-
-#ifdef DEBUG
-        Serial.println("Client disconnected.");
-#endif
     }
 }
