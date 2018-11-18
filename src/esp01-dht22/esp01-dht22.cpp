@@ -24,6 +24,9 @@ DHT dht(DHT_DATA, DHT22);
 // Status LED
 const int LED_STATUS = 1;
 
+// Enable ADC for reading VCC
+ADC_MODE(ADC_VCC);
+
 // default loop delay
 unsigned long sleeptime = 10000;
 
@@ -103,6 +106,7 @@ void loop() {
     char humidityTemp[7];
     float t;
     float h;
+    float vcc;
     unsigned long timeout;
 
     // Connect to server to submit measurement
@@ -138,7 +142,7 @@ void loop() {
 
     // Check if any reads failed and exit
     if (isnan(h) || isnan(t)) {
-        client.println("FAILED");
+        client.print("FAILED ");
     } else {
         // Convert float to string
         dtostrf(t, 6, 2, celsiusTemp);
@@ -148,10 +152,12 @@ void loop() {
         client.print(celsiusTemp);
         client.print(" C  ");
         client.print(humidityTemp);
-        client.println(" %");
+        client.print(" %  ");
     }
-    // yield CPU to schedule socket communication
-    delay(1);
+    // Print input voltage
+    vcc = ((float)ESP.getVcc())/1024;
+    client.print(vcc);
+    client.println(" V");
 
     // Wait for answer from server
     timeout = millis();
