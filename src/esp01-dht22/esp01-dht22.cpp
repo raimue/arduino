@@ -18,6 +18,7 @@
 
 // DHT22 Sensor
 const int DHT_DATA = 2;
+const int DHT_POWER = 3;
 DHT dht(DHT_DATA, DHT22);
 
 // Status LED
@@ -37,14 +38,15 @@ void setup() {
     delay(10);
 #endif
 
-    // Use TX pin for status LED only
+    // Use RX/TX pins as normal GPIOs
 #ifndef DEBUG
     pinMode(LED_STATUS, OUTPUT);
+    pinMode(DHT_POWER, OUTPUT);
+    digitalWrite(DHT_POWER, LOW);
 #endif
 
     // Blink status LED
 #ifndef DEBUG
-    pinMode(LED_STATUS, OUTPUT);
     for (int i = 0; i < 3; i++) {
         digitalWrite(LED_STATUS, LOW);
         delay(50);
@@ -88,9 +90,6 @@ void setup() {
     Serial.println(WiFi.localIP());
 #endif
 
-    // Enable DHT sensor
-    dht.begin();
-
     // Update status LED for connection
 #ifndef DEBUG
     for (int i = 0; i < 2; i++) {
@@ -112,6 +111,19 @@ void loop() {
     float vcc;
     unsigned long timeout;
 
+    // Enable DHT sensor
+    digitalWrite(DHT_POWER, HIGH);
+    dht.begin();
+    // give sensor time to stabilize, datasheet recommends >2s
+    delay(2000);
+
+    // Update status LED for activity
+#ifndef DEBUG
+    digitalWrite(LED_STATUS, LOW);
+    delay(600);
+    digitalWrite(LED_STATUS, HIGH);
+#endif
+
     // Connect to server to submit measurement
     WiFiClient client;
     if (!client.connect(SERVER_IP, SERVER_PORT)) {
@@ -120,13 +132,6 @@ void loop() {
 #endif
         goto error;
     }
-
-    // Update status LED for activity
-#ifndef DEBUG
-    digitalWrite(LED_STATUS, LOW);
-    delay(600);
-    digitalWrite(LED_STATUS, HIGH);
-#endif
 
     // Print MAC
     client.print(WiFi.macAddress());
@@ -197,6 +202,10 @@ error:
 out:
     // disconnect
     client.stop();
+
+    // disable DHT sensor
+    digitalWrite(DHT_POWER, LOW);
+
     // go to sleep
     delay(sleeptime);
 }
