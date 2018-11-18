@@ -1,7 +1,7 @@
 BOARD_TAG ?= pro5v328
 OBJDIR    ?= .build/$(BOARD_TAG)
 
-MONITOR_CMD ?= screen -c /dev/null
+MONITOR_CMD ?= picocom
 
 ARDMK_DIR ?= $(realpath ../../tools/arduino-mk)
 ARDMK_FILE ?= $(ARDMK_DIR)/Arduino.mk
