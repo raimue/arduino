@@ -1,6 +1,5 @@
 #include <Arduino.h>
 
-// Including the ESP8266 WiFi library
 #include <ESP8266WiFi.h>
 #include "DHT.h"
 
@@ -60,6 +59,10 @@ void setup() {
     Serial.print("Connecting to ");
     Serial.println(ssid);
 #endif
+
+    // Force WiFi station mode, needs GPIO16->RST?
+    //WiFi.mode(WIFI_STA);
+    //WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
 
     // Update WiFi data if SSID changed
     if (WiFi.SSID() != WIFI_SSID) {
