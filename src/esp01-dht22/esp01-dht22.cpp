@@ -5,8 +5,8 @@
 #include "DHT.h"
 
 // Replace with your network details
-//const char* ssid = "";
-//const char* password = "";
+//#define WIFI_SSID    ""
+//#define WIFI_PASS    ""
 #include "wifi-auth.h"
 
 #define STRINGIFY(s) XSTRINGIFY(s)
@@ -57,10 +57,13 @@ void setup() {
     Serial.println(ssid);
 #endif
 
-    // do not write WiFi data to flash
-    WiFi.persistent(false);
-
-    WiFi.begin(ssid, password);
+    // Update WiFi data if SSID changed
+    if (WiFi.SSID() != WIFI_SSID) {
+        WiFi.begin(WIFI_SSID, WIFI_PASS);
+        WiFi.persistent(true);
+        WiFi.setAutoConnect(true);
+        WiFi.setAutoReconnect(true);
+    }
 
     // TODO: go to sleep if no connection
     while (WiFi.status() != WL_CONNECTED) {
