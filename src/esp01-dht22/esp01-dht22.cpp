@@ -24,6 +24,9 @@ DHT dht(DHT_DATA, DHT22);
 // Status LED
 const int LED_STATUS = 1;
 
+// default loop delay
+unsigned long sleeptime = 10000;
+
 // only runs once on boot
 void setup() {
 #ifdef DEBUG
@@ -100,7 +103,6 @@ void loop() {
     char humidityTemp[7];
     float t;
     float h;
-    int sleeptime = 30000;
     unsigned long timeout;
 
     // Connect to server to submit measurement
@@ -164,13 +166,13 @@ void loop() {
 
     // Read answer from server
     while (client.available()) {
-        int tmp = client.parseInt();
+        long stime = client.parseInt();
 #ifdef DEBUG
         Serial.print("Server reply: ");
-        Serial.println(tmp);
+        Serial.println(stime);
 #endif
-        if (tmp > 0) {
-            sleeptime = tmp;
+        if (stime > 0) {
+            sleeptime = stime;
         }
     }
 
@@ -184,6 +186,10 @@ error:
         delay(100);
         digitalWrite(LED_STATUS, HIGH);
         delay(100);
+    }
+    // increase backoff
+    if (sleeptime < 5*60*1000) {
+        sleeptime *= 2;
     }
 
 out:
