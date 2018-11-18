@@ -118,20 +118,13 @@ void loop() {
 #ifdef DEBUG
         Serial.println("Client connection failed!");
 #endif
-        // Update status LED for failure
-        for (int i = 0; i < 2; i++) {
-            digitalWrite(LED_STATUS, LOW);
-            delay(100);
-            digitalWrite(LED_STATUS, HIGH);
-            delay(100);
-        }
         goto error;
     }
 
     // Update status LED for activity
 #ifndef DEBUG
     digitalWrite(LED_STATUS, LOW);
-    delay(1000);
+    delay(600);
     digitalWrite(LED_STATUS, HIGH);
 #endif
 
