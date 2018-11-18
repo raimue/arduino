@@ -1,7 +1,8 @@
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
-#include "DHT.h"
+#include <Ticker.h>
+#include <DHT.h>
 
 // Replace with your network details
 //#define WIFI_SSID    ""
@@ -30,8 +31,31 @@ ADC_MODE(ADC_VCC);
 // default loop delay
 unsigned long sleeptime = 10000;
 
+Ticker sleepTicker;
+unsigned long startTime;
+
+#define MAX_LOOP_TIME_MS 10000
+
+void sleepFunc() {
+    const int elapsed = millis() - startTime;
+    // If this sleep happened because of timeout, clear the
+    // Wifi settings. (Maybe the AP channel changed, etc.)
+    if (elapsed >= MAX_LOOP_TIME_MS) {
+        WiFi.disconnect();
+    }
+    // sleep n microseconds
+    ESP.deepSleep(sleeptime * 1000, WAKE_RF_DEFAULT);
+    // It can take a while for the ESP to actually go to sleep.
+    // When it wakes up we start again in setup().
+    delay(5000);
+}
+
 // only runs once on boot
 void setup() {
+    // watchdog for one minute maximum runtime
+    startTime = millis();
+    sleepTicker.once_ms(60000, &sleepFunc);
+
 #ifdef DEBUG
     // Initializing serial port for debugging purposes
     Serial.begin(115200);
@@ -59,12 +83,8 @@ void setup() {
 #ifdef DEBUG
     Serial.println();
     Serial.print("Connecting to ");
-    Serial.println(ssid);
+    Serial.println(WIFI_SSID);
 #endif
-
-    // Force WiFi station mode, needs GPIO16->RST?
-    //WiFi.mode(WIFI_STA);
-    //WiFi.setSleepMode(WIFI_LIGHT_SLEEP);
 
     // Update WiFi data if SSID changed
     if (WiFi.SSID() != WIFI_SSID) {
@@ -101,7 +121,6 @@ void setup() {
 #endif
 }
 
-// runs over and over again
 void loop() {
     // Temporary variables
     char celsiusTemp[7];
@@ -111,8 +130,10 @@ void loop() {
     float vcc;
     unsigned long timeout;
 
+#ifndef DEBUG
     // Enable DHT sensor
     digitalWrite(DHT_POWER, HIGH);
+#endif
     dht.begin();
     // give sensor time to stabilize, datasheet recommends >2s
     delay(2000);
@@ -160,6 +181,9 @@ void loop() {
     client.print(vcc);
     client.println(" V");
 
+    // yield CPU
+    delay(1);
+
     // Wait for answer from server
     timeout = millis();
     while (!client.available()) {
@@ -203,9 +227,11 @@ out:
     // disconnect
     client.stop();
 
+#ifndef DEBUG
     // disable DHT sensor
     digitalWrite(DHT_POWER, LOW);
+#endif
 
     // go to sleep
-    delay(sleeptime);
+    sleepFunc();
 }
