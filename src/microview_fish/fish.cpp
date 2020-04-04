@@ -55,20 +55,20 @@ static uint8_t image_data[] = {
 };
 
 void setup() {
-	uView.begin();
-	uView.clear(PAGE);
+    uView.begin();
+    uView.clear(PAGE);
 
-        for (uint8_t y = 0; y < image_height; y++) {
-            for (uint8_t x = 0; x < image_width; x++) {
-                uint16_t pos  = y * (image_width/8) + x/(image_width/8);
-                uint8_t mask = 1 << (7 - (x % 8));
-                if ((image_data[pos] & mask) != 0) {
-                    uView.pixel(x, y);
-                }
+    for (uint8_t y = 0; y < image_height; y++) {
+        for (uint8_t x = 0; x < image_width; x++) {
+            uint16_t pos  = y * (image_width/8) + x/(image_width/8);
+            uint8_t mask = 1 << (7 - (x % 8));
+            if ((image_data[pos] & mask) != 0) {
+                uView.pixel(x, y);
             }
         }
+    }
 
-        uView.display();
+    uView.display();
 }
 
 void loop() {
