@@ -12,7 +12,7 @@
 	url = https://github.com/adafruit/DHT-sensor-library.git
 [submodule "tools/arduino-mk-esp"]
 	path = tools/arduino-mk-esp
-	url = https://github.com/andreasberg/Arduino-Makefile-ESP
+	url = https://github.com/raimue/Arduino-Makefile-ESP
 [submodule "hardware/esp8266com/esp8266"]
 	path = hardware/esp8266com/esp8266
 	url = https://github.com/esp8266/Arduino.git
