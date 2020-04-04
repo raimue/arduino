@@ -56,6 +56,8 @@ static uint8_t image_data[] = {
 
 void setup() {
     uView.begin();
+    uView.flipVertical(true);
+    uView.flipHorizontal(true);
     uView.clear(PAGE);
 
     for (uint8_t y = 0; y < image_height; y++) {

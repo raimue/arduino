@@ -21,6 +21,8 @@ MicroViewWidget *widget;
 
 void setup() {
     uView.begin();
+    uView.flipHorizontal(true);
+    uView.flipVertical(true);
     widget = new MicroViewGauge(32, 24, 0, 1023, WIDGETSTYLE0);
     uView.clear(PAGE);
 }

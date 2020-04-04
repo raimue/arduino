@@ -2,6 +2,8 @@
 
 void setup() {
     uView.begin();
+    uView.flipVertical(true);
+    uView.flipHorizontal(true);
 }
 
 void loop () {
