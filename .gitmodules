@@ -3,7 +3,7 @@
 	url = https://github.com/sudar/Arduino-Makefile.git
 [submodule "libraries/MicroView"]
 	path = libraries/MicroView
-	url = git@github.com:geekammo/MicroView-Arduino-Library.git
+	url = https://github.com/sparkfun/SparkFun_MicroView_Arduino_Library.git
 [submodule "libraries/Adafruit_Sensor"]
 	path = libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor.git
