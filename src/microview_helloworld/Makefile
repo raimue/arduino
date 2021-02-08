@@ -1,5 +1,2 @@
-BOARDS_TXT = ../../hardware/boards.txt
-BOARD_TAG = uview
-ARDUINO_LIBS = MicroView
-
+include ../microview.mk
 include ../arduino-config.mk
