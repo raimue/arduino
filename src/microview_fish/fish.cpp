@@ -73,5 +73,24 @@ void setup() {
     uView.display();
 }
 
+#if 0
+static uint8_t contrast = 0;
+
+void loop() {
+    static int8_t inc = 256 / 16;
+    if ((inc > 0 && ((uint8_t) (contrast + inc)) <= contrast) ||
+            (inc < 0 && ((uint8_t) (contrast + inc)) >= contrast)) {
+        inc = -inc;
+    }
+    contrast = contrast + inc;
+    // uView.clear(PAGE);
+    uView.contrast(contrast);
+    // uView.setCursor(0, 0);
+    // uView.print(String(contrast) + "\n" + String(inc) + "\n");
+    // uView.display();
+    delay(1000 / 16);
+}
+#else
 void loop() {
 }
+#endif
