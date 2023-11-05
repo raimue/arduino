@@ -1,6 +1,7 @@
 ## Variables
 
 ARDUINO_CLI ?= arduino-cli
+MONITOR_CMD ?= picocom
 BUILD_PATH ?= $(PWD)/.build
 
 ## Local options
@@ -33,6 +34,15 @@ compile:
 .PHONY: upload
 upload:
 	$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(SERIAL_PORT) --input-dir $(BUILD_PATH)
+
+.PHONY: monitor
+monitor:
+ifeq ($(MONITOR_CMD),picocom)
+	$(MONITOR_CMD) -b $(MONITOR_BAUDRATE) $(SERIAL_PORT)
+else
+	echo "Unknown tool selected for MONITOR_CMD=$(MONITOR_CMD)" >&2
+	exit 1
+endif
 
 .PHONY: clean
 clean:
