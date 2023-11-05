@@ -8,6 +8,9 @@
 [submodule "libraries/Adafruit_Sensor"]
 	path = libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor.git
+[submodule "libraries/ArduinoOTA"]
+	path = libraries/ArduinoOTA
+	url = https://github.com/JAndrassy/ArduinoOTA.git
 [submodule "libraries/DHT"]
 	path = libraries/DHT
 	url = https://github.com/adafruit/DHT-sensor-library.git
