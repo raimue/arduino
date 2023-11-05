@@ -5,6 +5,7 @@
 [submodule "libraries/MicroView"]
 	path = libraries/MicroView
 	url = https://github.com/sparkfun/SparkFun_MicroView_Arduino_Library.git
+	branch = master
 [submodule "libraries/Adafruit_Sensor"]
 	path = libraries/Adafruit_Sensor
 	url = https://github.com/adafruit/Adafruit_Sensor.git
