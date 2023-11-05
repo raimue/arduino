@@ -1,3 +1,4 @@
+# vim:set noet sw=8 ts=8:
 [submodule "tools/arduino-mk"]
 	path = tools/arduino-mk
 	url = https://github.com/sudar/Arduino-Makefile.git
