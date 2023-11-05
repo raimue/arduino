@@ -9,8 +9,13 @@ anything interesting you would like to know more about.
 
 This repository uses external repositories using git submodules:
 
-    $ git submodule init
-    $ git submodule update
+    $ git submodule update --init
+
+Some of the external repositories are once again using submodules. Depending on
+what you are working on, you may not need them all and you can initialize them
+as needed. Or you can get a full copy of all submodules recursively:
+
+    $ git submodule update --init --recursive
 
 
 ## Boards Management
