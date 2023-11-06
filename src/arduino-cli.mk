@@ -31,7 +31,16 @@ ifeq ($(MONITOR_PORT),)
 $(error missing MONITOR_PORT)
 endif
 
-BUILD_DEFINES := MONITOR_BAUDRATE WIFI_SSID WIFI_PASSWORD
+OTA_HOSTNAME ?= $(notdir $(PWD))
+OTA_IP ?= $(shell getent ahostsv4 "$(OTA_HOSTNAME)" 2>/dev/null | awk '/STREAM/{print $$1; exit}')
+
+BUILD_DEFINES := \
+	MONITOR_BAUDRATE \
+	WIFI_SSID \
+	WIFI_PASSWORD \
+	OTA_HOSTNAME \
+	OTA_PORT \
+	OTA_PASSWORD
 BUILD_DEFINES_H = $(BUILD_PATH)/defines.h
 BUILD_FLAGS=--build-property "build.extra_flags=-include $(BUILD_DEFINES_H)"
 
@@ -48,7 +57,7 @@ $(BUILD_DEFINES_H): Makefile $(wildcard *.mk) $(MAKEFILE_LIST)
 	@echo -n > $@
 	@for line in $(foreach def,$(BUILD_DEFINES),\
 	               $(if $(strip $($(def))),\
-	                 $(if $(filter %_BAUDRATE,$(def)),\
+	                 $(if $(filter %_BAUDRATE %_PORT,$(def)),\
 	                   "#define $(def) $($(def))",\
 	                   "#define $(def) \"$($(def))\"")\
 	                )$\
@@ -63,6 +72,11 @@ compile: preprocess
 .PHONY: upload
 upload:
 	$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(MONITOR_PORT) --input-dir $(BUILD_PATH)
+
+.PHONY: ota
+ota:
+	@echo $(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(OTA_IP) --upload-field "password=<hidden>" --input-dir $(BUILD_PATH)
+	@$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(OTA_IP) --upload-field "password=$(OTA_PASSWORD)" --input-dir $(BUILD_PATH)
 
 .PHONY: monitor
 monitor:
