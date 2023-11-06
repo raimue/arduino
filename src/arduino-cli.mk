@@ -18,8 +18,8 @@ ifeq ($(BOARD_FQDN),)
 $(error missing BOARD_FQDN)
 endif
 
-ifeq ($(SERIAL_PORT),)
-$(error missing SERIAL_PORT)
+ifeq ($(MONITOR_PORT),)
+$(error missing MONITOR_PORT)
 endif
 
 ## Build rules
@@ -33,12 +33,12 @@ compile:
 
 .PHONY: upload
 upload:
-	$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(SERIAL_PORT) --input-dir $(BUILD_PATH)
+	$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(MONITOR_PORT) --input-dir $(BUILD_PATH)
 
 .PHONY: monitor
 monitor:
 ifeq ($(MONITOR_CMD),picocom)
-	$(MONITOR_CMD) -b $(MONITOR_BAUDRATE) $(SERIAL_PORT)
+	$(MONITOR_CMD) -b $(MONITOR_BAUDRATE) $(MONITOR_PORT)
 else
 	echo "Unknown tool selected for MONITOR_CMD=$(MONITOR_CMD)" >&2
 	exit 1
