@@ -58,7 +58,7 @@ void setup() {
 
 #ifdef DEBUG
     // Initializing serial port for debugging purposes
-    Serial.begin(115200);
+    Serial.begin(74880);
     delay(10);
 #endif
 

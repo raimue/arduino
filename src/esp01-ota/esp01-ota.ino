@@ -11,7 +11,7 @@
 //#define OTA_PASSWORD ""
 
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(74880);
     Serial.println("Booting");
 
     WiFi.mode(WIFI_STA);
