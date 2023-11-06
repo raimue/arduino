@@ -12,6 +12,15 @@ else
 VERBOSE =
 endif
 
+## Helpers
+
+empty :=
+space := $(empty) $(empty)
+define newline
+
+$(empty)
+endef
+
 ## Makefile options
 
 ifeq ($(BOARD_FQDN),)
@@ -22,14 +31,34 @@ ifeq ($(MONITOR_PORT),)
 $(error missing MONITOR_PORT)
 endif
 
+BUILD_DEFINES := MONITOR_BAUDRATE WIFI_SSID WIFI_PASSWORD
+BUILD_DEFINES_H = $(BUILD_PATH)/defines.h
+BUILD_FLAGS=--build-property "build.extra_flags=-include $(BUILD_DEFINES_H)"
+
 ## Build rules
 
 .PHONY: all
 all: compile
 
+.PHONY: preprocess
+preprocess: $(BUILD_DEFINES_H)
+
+$(BUILD_DEFINES_H): Makefile $(wildcard *.mk) $(MAKEFILE_LIST)
+	@mkdir -p $(BUILD_PATH)
+	@echo -n > $@
+	@for line in $(foreach def,$(BUILD_DEFINES),\
+	               $(if $(strip $($(def))),\
+	                 $(if $(filter %_BAUDRATE,$(def)),\
+	                   "#define $(def) $($(def))",\
+	                   "#define $(def) \"$($(def))\"")\
+	                )$\
+	              ); do \
+		echo "$$line" >> $@; \
+	done
+
 .PHONY: compile
-compile:
-	$(ARDUINO_CLI) compile $(VERBOSE) -b $(BOARD_FQDN) --build-path $(BUILD_PATH)
+compile: preprocess
+	$(ARDUINO_CLI) compile $(VERBOSE) -b $(BOARD_FQDN) $(BUILD_FLAGS) --build-path $(BUILD_PATH)
 
 .PHONY: upload
 upload:
