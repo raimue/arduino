@@ -115,7 +115,7 @@ void setup() {
 void loop() {
     static uint32_t state = 0;
     static uint32_t freq = 10000;
-    static uint32_t sleepTime = 1 * 60 * 1000;
+    static uint32_t sleepTime = 5 * 60 * 1000;
     static uint32_t startTime = millis();
 
     uint32_t currentTime = millis();
