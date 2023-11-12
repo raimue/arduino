@@ -34,7 +34,7 @@ endif
 OTA_HOSTNAME ?= $(notdir $(PWD))
 OTA_IP ?= $(shell getent ahostsv4 "$(OTA_HOSTNAME)" 2>/dev/null | awk '/STREAM/{print $$1; exit}')
 
-BUILD_DEFINES := \
+BUILD_DEFINES += \
 	MONITOR_BAUDRATE \
 	WIFI_SSID \
 	WIFI_PASSWORD \
