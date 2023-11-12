@@ -75,7 +75,7 @@ upload:
 
 .PHONY: ota
 ota:
-	@echo $(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(OTA_IP) --upload-field "password=<hidden>" --input-dir $(BUILD_PATH)
+	@echo $(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(if $(OTA_IP),$(OTA_IP),$(error missing OTA_IP)) --upload-field "password=<hidden>" --input-dir $(BUILD_PATH)
 	@$(ARDUINO_CLI) upload $(VERBOSE) -b $(BOARD_FQDN) -p $(OTA_IP) --upload-field "password=$(OTA_PASSWORD)" --input-dir $(BUILD_PATH)
 
 .PHONY: monitor
