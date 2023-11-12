@@ -104,6 +104,11 @@ void setup() {
 
     telegram.begin();
     Serial.printf("Telegram bot @%s started\r\n", telegram.getBotName());
+
+    TBMessage msg{};
+    msg.chatId = BOT_CHAT_ID;
+    msg.disable_notification = true;
+    telegram.sendMessage(msg, "Fenster ist offen! Ich erinnere dich in 5 Minuten ans Schließen.");
 }
 
 // Loop
