@@ -3,6 +3,8 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
+constexpr int LED_STATUS = 2;
+
 // Replace with your network details
 //#define WIFI_SSID ""
 //#define WIFI_PASSWORD ""
@@ -13,6 +15,9 @@
 void setup() {
     Serial.begin(74880);
     Serial.println("Booting");
+
+    pinMode(LED_STATUS, OUTPUT);
+    digitalWrite(LED_STATUS, HIGH);
 
     WiFi.mode(WIFI_STA);
     WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -76,4 +81,11 @@ void setup() {
 
 void loop() {
     ArduinoOTA.handle();
+
+    static uint32_t count = 0;
+    count++;
+    if (count % 10000 == 0) {
+        count = 0;
+        digitalWrite(LED_STATUS, !digitalRead(LED_STATUS));
+    }
 }
