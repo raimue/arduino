@@ -1,3 +1,4 @@
 /README.html
 /src/esp01-passwords.mk
+/src/**/passwords.mk
 .build/
