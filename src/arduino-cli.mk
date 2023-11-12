@@ -57,7 +57,7 @@ $(BUILD_DEFINES_H): Makefile $(wildcard *.mk) $(MAKEFILE_LIST)
 	@echo -n > $@
 	@for line in $(foreach def,$(BUILD_DEFINES),\
 	               $(if $(strip $($(def))),\
-	                 $(if $(filter %_BAUDRATE %_PORT,$(def)),\
+	                 $(if $(filter %_BAUDRATE %_PORT %_ID,$(def)),\
 	                   "#define $(def) $($(def))",\
 	                   "#define $(def) \"$($(def))\"")\
 	                )$\
