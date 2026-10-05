@@ -30,11 +30,11 @@ X509List telegramCertificate(telegram_cert);
 uint32_t gWindowOpenStart = 0;
 
 // Pick a random entry from a message pool for more variety.
-const String &pickOne(const String list[], int count) {
+const char *pickOne(const char *list[], int count) {
     return list[random(count)];
 }
 
-String formatWindowMessage(const String &body) {
+String formatWindowMessage(const char *body) {
     unsigned long openMinutes = (millis() - gWindowOpenStart) / 60000UL;
 
     String full = body;
@@ -56,7 +56,7 @@ String formatWindowMessage(const String &body) {
 }
 
 // Message pools for more variety. One entry is picked at random per reminder.
-const String kStartMessages[] = {
+const char *kStartMessages[] = {
     "Fenster ist offen! Ich erinnere dich in 5 Minuten ans Schließen.",
     "Frischluft! Fenster ist offen. Erste Erinnerung kommt in 5 Minuten.",
     "Okay, Fenster-Timer läuft! Ich melde mich in 5 Minuten wieder.",
@@ -66,7 +66,7 @@ const String kStartMessages[] = {
     "Fenster-Timer aktiv! Ich melde mich in 5 Minuten.",
     "Frischluftmodus an! In 5 Minuten erinnere ich dich ans Schließen.",
 };
-const String kGentleMessages[] = {
+const char *kGentleMessages[] = {
     "Zeit ist um! Mach das Fenster zu!",
     "5 Minuten sind rum – bitte Fenster schließen!",
     "Erinnerung: Das Fenster ist noch offen. Bitte zumachen!",
@@ -82,7 +82,7 @@ const String kGentleMessages[] = {
     "Es wird kühl – mach bitte das Fenster zu!",
     "So, gelüftet ist gelüftet – Fenster bitte zu!",
 };
-const String kUrgentMessages[] = {
+const char *kUrgentMessages[] = {
     "Hey, nicht vergessen, du musst das Fenster zu machen!",
     "Das Fenster ist immer noch offen – jetzt wirklich zumachen!",
     "Schon eine ganze Weile offen! Bitte mach das Fenster zu.",
@@ -96,7 +96,7 @@ const String kUrgentMessages[] = {
     "Erinnerung Nummer zwei: Fenster schließen!",
     "Komm schon, ein Griff – Fenster zu!",
 };
-const String kFinalMessages[] = {
+const char *kFinalMessages[] = {
     "Letzte Warnung: MACH JETZT DAS FENSTER ZU!!!",
     "ERNSTHAFT: Fenster JETZT schließen!!!",
     "Das Fenster ist schon ewig offen – bitte SOFORT schließen!",
