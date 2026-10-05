@@ -20,6 +20,9 @@
 constexpr int LED_STATUS = 2;
 #define MYTZ TZ_Europe_Berlin
 
+// Number of entries in a static array.
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
 // Globals
 WiFiClientSecure httpClient;
 AsyncTelegram2 telegram(httpClient);
@@ -109,6 +112,13 @@ const char *kFinalMessages[] = {
     "Alarmstufe Rot: FENSTER JETZT SCHLIESSEN!!!",
 };
 
+// Send a random reminder from the given pool, logging on failure.
+void sendReminder(const char *list[], int count) {
+    if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(list, count)))) {
+        Serial.println("Telegram send failed!");
+    }
+}
+
 // Setup
 void setup() {
     pinMode(LED_STATUS, OUTPUT);
@@ -194,7 +204,7 @@ void setup() {
     TBMessage msg{};
     msg.chatId = BOT_CHAT_ID;
     msg.disable_notification = true;
-    if (!telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, sizeof(kStartMessages) / sizeof(kStartMessages[0]))))) {
+    if (!telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, ARRAY_SIZE(kStartMessages))))) {
         Serial.println("Telegram send failed!");
     }
 }
@@ -211,22 +221,16 @@ void loop() {
         state++;
 
         if (state <= 5) {
-            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kGentleMessages, sizeof(kGentleMessages) / sizeof(kGentleMessages[0]))))) {
-                Serial.println("Telegram send failed!");
-            }
+            sendReminder(kGentleMessages, ARRAY_SIZE(kGentleMessages));
             sleepTime = 60 * 1000;
             startTime = millis();
         } else if (state <= 10) {
-            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kUrgentMessages, sizeof(kUrgentMessages) / sizeof(kUrgentMessages[0]))))) {
-                Serial.println("Telegram send failed!");
-            }
+            sendReminder(kUrgentMessages, ARRAY_SIZE(kUrgentMessages));
             freq = 300;
             sleepTime = 30 * 1000;
             startTime = millis();
         } else {
-            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kFinalMessages, sizeof(kFinalMessages) / sizeof(kFinalMessages[0]))))) {
-                Serial.println("Telegram send failed!");
-            }
+            sendReminder(kFinalMessages, ARRAY_SIZE(kFinalMessages));
             freq = 150;
             sleepTime = 30 * 1000;
             startTime = millis();
