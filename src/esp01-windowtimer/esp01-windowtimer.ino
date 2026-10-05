@@ -202,7 +202,7 @@ void setup() {
 // Loop
 void loop() {
     static uint32_t state = 0;
-    static uint32_t freq = 10000;
+    static uint32_t freq = 600;
     static uint32_t sleepTime = 5 * 60 * 1000;
     static uint32_t startTime = millis();
 
@@ -220,24 +220,23 @@ void loop() {
             if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kUrgentMessages, sizeof(kUrgentMessages) / sizeof(kUrgentMessages[0]))))) {
                 Serial.println("Telegram send failed!");
             }
-            freq = 5000;
+            freq = 300;
             sleepTime = 30 * 1000;
             startTime = millis();
         } else {
             if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kFinalMessages, sizeof(kFinalMessages) / sizeof(kFinalMessages[0]))))) {
                 Serial.println("Telegram send failed!");
             }
-            freq = 1000;
+            freq = 150;
             sleepTime = 30 * 1000;
             startTime = millis();
         }
     }
 
     if (state > 0) {
-        static uint32_t count = 0;
-        count++;
-        if (count % freq == 0) {
-            count = 0;
+        static uint32_t lastBlink = 0;
+        if (currentTime - lastBlink >= freq) {
+            lastBlink = currentTime;
             digitalWrite(LED_STATUS, !digitalRead(LED_STATUS));
         }
     }
