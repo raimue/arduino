@@ -36,16 +36,22 @@ const String &pickOne(const String list[], int count) {
 
 String formatWindowMessage(const String &body) {
     unsigned long openMinutes = (millis() - gWindowOpenStart) / 60000UL;
-    String elapsed;
-    if (openMinutes < 60) {
-        elapsed = String(openMinutes) + " Minuten";
-    } else {
-        elapsed = String(openMinutes / 60) + " Std. " + String(openMinutes % 60) + " Min.";
-    }
+
     String full = body;
-    full += " (";
-    full += elapsed;
-    full += ")";
+
+    if (openMinutes > 0) {
+      String elapsed;
+      if (openMinutes < 60) {
+          elapsed = String(openMinutes) + " Minuten";
+      } else {
+          elapsed = String(openMinutes / 60) + " Std. " + String(openMinutes % 60) + " Min.";
+      }
+
+      full += " (";
+      full += elapsed;
+      full += ")";
+    }
+
     return full;
 }
 
