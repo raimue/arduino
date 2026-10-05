@@ -26,6 +26,61 @@ AsyncTelegram2 telegram(httpClient);
 Session telegramSession;
 X509List telegramCertificate(telegram_cert);
 
+// Reminder state
+uint32_t gWindowOpenStart = 0;
+
+// Pick a random entry from a message pool for more variety.
+const String &pickOne(const String list[], int count) {
+    return list[random(count)];
+}
+
+String formatWindowMessage(const String &body) {
+    unsigned long openMinutes = (millis() - gWindowOpenStart) / 60000UL;
+    String elapsed;
+    if (openMinutes < 60) {
+        elapsed = String(openMinutes) + " Minuten";
+    } else {
+        elapsed = String(openMinutes / 60) + " Std. " + String(openMinutes % 60) + " Min.";
+    }
+    String full = body;
+    full += " (";
+    full += elapsed;
+    full += ")";
+    return full;
+}
+
+// Message pools for more variety. One entry is picked at random per reminder.
+const String kStartMessages[] = {
+    "Fenster ist offen! Ich erinnere dich in 5 Minuten ans Schließen.",
+    "Frischluft! Fenster ist offen. Erste Erinnerung kommt in 5 Minuten.",
+    "Okay, Fenster-Timer läuft! Ich melde mich in 5 Minuten wieder.",
+    "Offenes Fenster erkannt. Lüften ist gut – ich passe auf die Zeit auf!",
+};
+const String kGentleMessages[] = {
+    "Zeit ist um! Mach das Fenster zu!",
+    "5 Minuten sind rum – bitte Fenster schließen!",
+    "Erinnerung: Das Fenster ist noch offen. Bitte zumachen!",
+    "Es zieht schon rein! Zeit, das Fenster zu schließen.",
+    "Frischluft reicht fürs Erste – Fenster bitte schließen!",
+    "Kleiner Stups: Fenster bitte zumachen!",
+    "Noch offen? Einmal Fenster schließen, bitte!",
+};
+const String kUrgentMessages[] = {
+    "Hey, nicht vergessen, du musst das Fenster zu machen!",
+    "Das Fenster ist immer noch offen – jetzt wirklich zumachen!",
+    "Schon eine ganze Weile offen! Bitte mach das Fenster zu.",
+    "Die Heizung freut sich, wenn du das Fenster jetzt schließt.",
+    "Los, Fenster zu – du schaffst das!",
+    "Lüften ist vorbei – bitte Fenster schließen, sonst wird's kalt!",
+};
+const String kFinalMessages[] = {
+    "Letzte Warnung: MACH JETZT DAS FENSTER ZU!!!",
+    "ERNSTHAFT: Fenster JETZT schließen!!!",
+    "Das Fenster ist schon ewig offen – bitte SOFORT schließen!",
+    "Finaler Alarm: Fenster zu, sonst heizt du zum Fenster raus!",
+    "Okay, letzte Chance – FENSTER JETZT ZU, bitte!!!",
+};
+
 // Setup
 void setup() {
     pinMode(LED_STATUS, OUTPUT);
@@ -105,10 +160,13 @@ void setup() {
     telegram.begin();
     Serial.printf("Telegram bot @%s started\r\n", telegram.getBotName());
 
+    randomSeed(micros() + ESP.getChipId());
+    gWindowOpenStart = millis();
+
     TBMessage msg{};
     msg.chatId = BOT_CHAT_ID;
     msg.disable_notification = true;
-    telegram.sendMessage(msg, "Fenster ist offen! Ich erinnere dich in 5 Minuten ans Schließen.");
+    telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, sizeof(kStartMessages) / sizeof(kStartMessages[0]))));
 }
 
 // Loop
@@ -123,16 +181,16 @@ void loop() {
         state++;
 
         if (state <= 5) {
-            telegram.sendTo(BOT_CHAT_ID, "Zeit ist um! Mach das Fenster zu!");
+            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kGentleMessages, sizeof(kGentleMessages) / sizeof(kGentleMessages[0]))));
             sleepTime = 60 * 1000;
             startTime = millis();
         } else if (state <= 10) {
-            telegram.sendTo(BOT_CHAT_ID, "Hey, nicht vergessen, du musst das Fenster zu machen!");
+            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kUrgentMessages, sizeof(kUrgentMessages) / sizeof(kUrgentMessages[0]))));
             freq = 5000;
             sleepTime = 30 * 1000;
             startTime = millis();
         } else {
-            telegram.sendTo(BOT_CHAT_ID, "Letzte Warnung: MACH JETZT DAS FENSTER ZU!!!");
+            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kFinalMessages, sizeof(kFinalMessages) / sizeof(kFinalMessages[0]))));
             freq = 1000;
             sleepTime = 30 * 1000;
             startTime = millis();
