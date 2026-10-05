@@ -61,6 +61,10 @@ const String kStartMessages[] = {
     "Frischluft! Fenster ist offen. Erste Erinnerung kommt in 5 Minuten.",
     "Okay, Fenster-Timer läuft! Ich melde mich in 5 Minuten wieder.",
     "Offenes Fenster erkannt. Lüften ist gut – ich passe auf die Zeit auf!",
+    "Durchzug gestartet! Fenster ist offen, ich erinnere dich in 5 Minuten.",
+    "Fenster auf – Timer an! Erinnerung kommt in 5 Minuten.",
+    "Fenster-Timer aktiv! Ich melde mich in 5 Minuten.",
+    "Frischluftmodus an! In 5 Minuten erinnere ich dich ans Schließen.",
 };
 const String kGentleMessages[] = {
     "Zeit ist um! Mach das Fenster zu!",
@@ -70,6 +74,13 @@ const String kGentleMessages[] = {
     "Frischluft reicht fürs Erste – Fenster bitte schließen!",
     "Kleiner Stups: Fenster bitte zumachen!",
     "Noch offen? Einmal Fenster schließen, bitte!",
+    "Na, wie sieht's aus? Fenster bitte schließen!",
+    "Tick, tack – Fensterzeit ist um! Bitte zumachen.",
+    "Hallo? Das Fenster wartet aufs Schließen!",
+    "Fünf Minuten frische Luft genügen – Fenster zu, bitte!",
+    "Kurze Erinnerung: Fenster schließen nicht vergessen!",
+    "Es wird kühl – mach bitte das Fenster zu!",
+    "So, gelüftet ist gelüftet – Fenster bitte zu!",
 };
 const String kUrgentMessages[] = {
     "Hey, nicht vergessen, du musst das Fenster zu machen!",
@@ -78,6 +89,12 @@ const String kUrgentMessages[] = {
     "Die Heizung freut sich, wenn du das Fenster jetzt schließt.",
     "Los, Fenster zu – du schaffst das!",
     "Lüften ist vorbei – bitte Fenster schließen, sonst wird's kalt!",
+    "Immer noch offen! Bitte jetzt das Fenster schließen.",
+    "Du wolltest doch das Fenster zumachen – jetzt wäre gut!",
+    "Achtung, Dauerlüftung! Fenster bitte schließen.",
+    "Frierst du nicht schon? – Fenster zu, bitte!",
+    "Erinnerung Nummer zwei: Fenster schließen!",
+    "Komm schon, ein Griff – Fenster zu!",
 };
 const String kFinalMessages[] = {
     "Letzte Warnung: MACH JETZT DAS FENSTER ZU!!!",
@@ -85,6 +102,11 @@ const String kFinalMessages[] = {
     "Das Fenster ist schon ewig offen – bitte SOFORT schließen!",
     "Finaler Alarm: Fenster zu, sonst heizt du zum Fenster raus!",
     "Okay, letzte Chance – FENSTER JETZT ZU, bitte!!!",
+    "ES REICHT: Fenster SOFORT schließen!!!",
+    "Dauerlüftung erkannt – FENSTER ZU, SOFORT!!!",
+    "Letzter Aufruf: Fenster schließen, bitte!!!",
+    "Stopp! Keine weitere Frischluft – FENSTER ZU!!!",
+    "Alarmstufe Rot: FENSTER JETZT SCHLIESSEN!!!",
 };
 
 // Setup
