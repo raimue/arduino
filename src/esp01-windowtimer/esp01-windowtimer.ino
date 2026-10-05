@@ -194,7 +194,9 @@ void setup() {
     TBMessage msg{};
     msg.chatId = BOT_CHAT_ID;
     msg.disable_notification = true;
-    telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, sizeof(kStartMessages) / sizeof(kStartMessages[0]))));
+    if (!telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, sizeof(kStartMessages) / sizeof(kStartMessages[0]))))) {
+        Serial.println("Telegram send failed!");
+    }
 }
 
 // Loop
@@ -209,16 +211,22 @@ void loop() {
         state++;
 
         if (state <= 5) {
-            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kGentleMessages, sizeof(kGentleMessages) / sizeof(kGentleMessages[0]))));
+            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kGentleMessages, sizeof(kGentleMessages) / sizeof(kGentleMessages[0]))))) {
+                Serial.println("Telegram send failed!");
+            }
             sleepTime = 60 * 1000;
             startTime = millis();
         } else if (state <= 10) {
-            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kUrgentMessages, sizeof(kUrgentMessages) / sizeof(kUrgentMessages[0]))));
+            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kUrgentMessages, sizeof(kUrgentMessages) / sizeof(kUrgentMessages[0]))))) {
+                Serial.println("Telegram send failed!");
+            }
             freq = 5000;
             sleepTime = 30 * 1000;
             startTime = millis();
         } else {
-            telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kFinalMessages, sizeof(kFinalMessages) / sizeof(kFinalMessages[0]))));
+            if (!telegram.sendTo(BOT_CHAT_ID, formatWindowMessage(pickOne(kFinalMessages, sizeof(kFinalMessages) / sizeof(kFinalMessages[0]))))) {
+                Serial.println("Telegram send failed!");
+            }
             freq = 1000;
             sleepTime = 30 * 1000;
             startTime = millis();
