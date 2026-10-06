@@ -30,7 +30,7 @@ Session telegramSession;
 X509List telegramCertificate(telegram_cert);
 
 // Reminder state
-uint32_t gWindowOpenStart = 0;
+uint32_t windowOpenStart = 0;
 
 // Pick a random entry from a message pool for more variety.
 const char *pickOne(const char *list[], int count) {
@@ -38,7 +38,7 @@ const char *pickOne(const char *list[], int count) {
 }
 
 String formatWindowMessage(const char *body) {
-    unsigned long openMinutes = (millis() - gWindowOpenStart) / 60000UL;
+    unsigned long openMinutes = (millis() - windowOpenStart) / 60000UL;
 
     String full = body;
 
@@ -59,7 +59,7 @@ String formatWindowMessage(const char *body) {
 }
 
 // Message pools for more variety. One entry is picked at random per reminder.
-const char *kStartMessages[] = {
+const char *startMessages[] = {
     "Fenster ist offen! Ich erinnere dich in 5 Minuten ans Schließen.",
     "Frischluft! Fenster ist offen. Erste Erinnerung kommt in 5 Minuten.",
     "Okay, Fenster-Timer läuft! Ich melde mich in 5 Minuten wieder.",
@@ -69,7 +69,7 @@ const char *kStartMessages[] = {
     "Fenster-Timer aktiv! Ich melde mich in 5 Minuten.",
     "Frischluftmodus an! In 5 Minuten erinnere ich dich ans Schließen.",
 };
-const char *kGentleMessages[] = {
+const char *gentleMessages[] = {
     "Zeit ist um! Mach das Fenster zu!",
     "5 Minuten sind rum – bitte Fenster schließen!",
     "Erinnerung: Das Fenster ist noch offen. Bitte zumachen!",
@@ -85,7 +85,7 @@ const char *kGentleMessages[] = {
     "Es wird kühl – mach bitte das Fenster zu!",
     "So, gelüftet ist gelüftet – Fenster bitte zu!",
 };
-const char *kUrgentMessages[] = {
+const char *urgentMessages[] = {
     "Hey, nicht vergessen, du musst das Fenster zu machen!",
     "Das Fenster ist immer noch offen – jetzt wirklich zumachen!",
     "Schon eine ganze Weile offen! Bitte mach das Fenster zu.",
@@ -99,7 +99,7 @@ const char *kUrgentMessages[] = {
     "Erinnerung Nummer zwei: Fenster schließen!",
     "Komm schon, ein Griff – Fenster zu!",
 };
-const char *kFinalMessages[] = {
+const char *finalMessages[] = {
     "Letzte Warnung: MACH JETZT DAS FENSTER ZU!!!",
     "ERNSTHAFT: Fenster JETZT schließen!!!",
     "Das Fenster ist schon ewig offen – bitte SOFORT schließen!",
@@ -210,12 +210,12 @@ void setup() {
     }
 
     randomSeed(micros() + ESP.getChipId());
-    gWindowOpenStart = millis();
+    windowOpenStart = millis();
 
     TBMessage msg{};
     msg.chatId = BOT_CHAT_ID;
     msg.disable_notification = true;
-    if (!telegram.sendMessage(msg, formatWindowMessage(pickOne(kStartMessages, ARRAY_SIZE(kStartMessages))))) {
+    if (!telegram.sendMessage(msg, formatWindowMessage(pickOne(startMessages, ARRAY_SIZE(startMessages))))) {
         Serial.println("Telegram send failed!");
     }
 }
@@ -232,17 +232,17 @@ void loop() {
         state++;
 
         if (state <= 5) {
-            sendReminder(kGentleMessages, ARRAY_SIZE(kGentleMessages));
+            sendReminder(gentleMessages, ARRAY_SIZE(gentleMessages));
             freq = 600;
             sleepTime = 60 * 1000;
             startTime = millis();
         } else if (state <= 10) {
-            sendReminder(kUrgentMessages, ARRAY_SIZE(kUrgentMessages));
+            sendReminder(urgentMessages, ARRAY_SIZE(urgentMessages));
             freq = 300;
             sleepTime = 30 * 1000;
             startTime = millis();
         } else {
-            sendReminder(kFinalMessages, ARRAY_SIZE(kFinalMessages));
+            sendReminder(finalMessages, ARRAY_SIZE(finalMessages));
             freq = 150;
             sleepTime = 30 * 1000;
             startTime = millis();
