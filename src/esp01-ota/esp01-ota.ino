@@ -82,10 +82,10 @@ void setup() {
 void loop() {
     ArduinoOTA.handle();
 
-    static uint32_t count = 0;
-    count++;
-    if (count % 10000 == 0) {
-        count = 0;
+    static uint32_t lastBlink = 0;
+    uint32_t currentTime = millis();
+    if (currentTime - lastBlink >= 100) {
+        lastBlink = currentTime;
         digitalWrite(LED_STATUS, !digitalRead(LED_STATUS));
     }
 }
