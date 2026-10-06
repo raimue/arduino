@@ -185,8 +185,16 @@ void setup() {
     Serial.print("WiFi connected. IP address: ");
     Serial.println(WiFi.localIP());
 
-    // Update current time via NTP
-    configTime(MYTZ, WiFi.gatewayIP().toString());
+    // Telegram certificate validation requires a valid system clock.
+    configTime(MYTZ, WiFi.gatewayIP().toString(), "ptbtime1.ptb.de");
+    struct tm timeInfo;
+    while (!getLocalTime(&timeInfo, 1000)) {
+        Serial.println("Waiting for NTP time...");
+        ArduinoOTA.handle();
+    }
+    char timeString[32];
+    strftime(timeString, sizeof(timeString), "%Y-%m-%d %H:%M:%S", &timeInfo);
+    Serial.printf("System time synchronized: %s\n", timeString);
 
     httpClient.setSession(&telegramSession);
     httpClient.setTrustAnchors(&telegramCertificate);
