@@ -222,6 +222,7 @@ void loop() {
 
         if (state <= 5) {
             sendReminder(kGentleMessages, ARRAY_SIZE(kGentleMessages));
+            freq = 600;
             sleepTime = 60 * 1000;
             startTime = millis();
         } else if (state <= 10) {
