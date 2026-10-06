@@ -210,6 +210,14 @@ void setup() {
         Serial.println("Telegram bot startup failed!");
     }
 
+    // Notify user that device is ready
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(LED_STATUS, HIGH);
+        delay(50);
+        digitalWrite(LED_STATUS, LOW);
+        delay(50);
+    }
+
     randomSeed(micros() + ESP.getChipId());
     windowOpenStart = millis();
 
