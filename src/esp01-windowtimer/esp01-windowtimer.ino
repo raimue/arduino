@@ -203,8 +203,11 @@ void setup() {
     telegram.setUpdateTime(2000);
     telegram.setTelegramToken(BOT_TOKEN);
 
-    telegram.begin();
-    Serial.printf("Telegram bot @%s started\r\n", telegram.getBotName());
+    if (telegram.begin()) {
+        Serial.printf("Telegram bot @%s started\r\n", telegram.getBotName());
+    } else {
+        Serial.println("Telegram bot startup failed!");
+    }
 
     randomSeed(micros() + ESP.getChipId());
     gWindowOpenStart = millis();
